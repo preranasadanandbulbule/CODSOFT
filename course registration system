@@ -1,0 +1,232 @@
+package jav4jn21cs067;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class Course {
+    String code;
+    String title;
+    String description;
+    int capacity;
+    String schedule;
+
+    public Course(String code, String title, String description, int capacity, String schedule) {
+        this.code = code;
+        this.title = title;
+        this.description = description;
+        this.capacity = capacity;
+        this.schedule = schedule;
+    }
+}
+
+class Student {
+    int id;
+    String name;
+    List<Course> registeredCourses;
+
+    public Student(int id, String name) {
+        this.id = id;
+        this.name = name;
+        this.registeredCourses = new ArrayList<>();
+    }
+}
+
+public class CourseRegistrationSystem {
+    private List<Course> courseDatabase;
+    private List<Student> studentDatabase;
+
+    public CourseRegistrationSystem() {
+        this.courseDatabase = new ArrayList<>();
+        this.studentDatabase = new ArrayList<>();
+    }
+
+    public void addCourse() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter Course Code:");
+        String code = scanner.nextLine();
+
+        System.out.println("Enter Course Title:");
+        String title = scanner.nextLine();
+
+        System.out.println("Enter Course Description:");
+        String description = scanner.nextLine();
+
+        System.out.println("Enter Course Capacity:");
+        int capacity = scanner.nextInt();
+        scanner.nextLine(); // consume the newline character
+
+        System.out.println("Enter Course Schedule:");
+        String schedule = scanner.nextLine();
+
+        Course course = new Course(code, title, description, capacity, schedule);
+        courseDatabase.add(course);
+
+        System.out.println("Course added successfully!");
+    }
+
+    public void addStudent() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter Student ID:");
+        int id = scanner.nextInt();
+        scanner.nextLine(); // consume the newline character
+
+        System.out.println("Enter Student Name:");
+        String name = scanner.nextLine();
+
+        Student student = new Student(id, name);
+        studentDatabase.add(student);
+
+        System.out.println("Student added successfully!");
+    }
+
+    public void registerStudentForCourse() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter Student ID:");
+        int studentId = scanner.nextInt();
+        scanner.nextLine(); // consume the newline character
+
+        System.out.println("Enter Course Code:");
+        String courseCode = scanner.nextLine();
+
+        Student student = findStudentById(studentId);
+        Course course = findCourseByCode(courseCode);
+
+        if (student != null && course != null) {
+            if (course.capacity > 0) {
+                student.registeredCourses.add(course);
+                course.capacity--;
+                System.out.println(student.name + " has successfully registered for " + course.title);
+            } else {
+                System.out.println("Sorry, " + course.title + " is already full. Cannot register.");
+            }
+        } else {
+            System.out.println("Student or Course not found.");
+        }
+    }
+
+    public void displayCourseListing() {
+        System.out.println("Available Courses:");
+        for (Course course : courseDatabase) {
+            System.out.println("Course Code: " + course.code);
+            System.out.println("Title: " + course.title);
+            System.out.println("Description: " + course.description);
+            System.out.println("Capacity: " + course.capacity);
+            System.out.println("Schedule: " + course.schedule);
+            System.out.println("-----------------------------");
+        }
+    }
+
+    public void displayStudentRegistration() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter Student ID:");
+        int studentId = scanner.nextInt();
+        scanner.nextLine(); // consume the newline character
+
+        Student student = findStudentById(studentId);
+
+        if (student != null) {
+            System.out.println("Registered Courses for " + student.name + ":");
+            for (Course course : student.registeredCourses) {
+                System.out.println(course.title);
+            }
+        } else {
+            System.out.println("Student not found.");
+        }
+    }
+
+    public void removeStudentFromCourse() {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter Student ID:");
+        int studentId = scanner.nextInt();
+        scanner.nextLine(); // consume the newline character
+
+        System.out.println("Enter Course Code:");
+        String courseCode = scanner.nextLine();
+
+        Student student = findStudentById(studentId);
+        Course course = findCourseByCode(courseCode);
+
+        if (student != null && course != null) {
+            if (student.registeredCourses.contains(course)) {
+                student.registeredCourses.remove(course);
+                course.capacity++;
+                System.out.println(student.name + " has successfully dropped " + course.title);
+            } else {
+                System.out.println(student.name + " is not registered for " + course.title);
+            }
+        } else {
+            System.out.println("Student or Course not found.");
+        }
+    }
+
+    private Student findStudentById(int studentId) {
+        for (Student student : studentDatabase) {
+            if (student.id == studentId) {
+                return student;
+            }
+        }
+        return null;
+    }
+
+    private Course findCourseByCode(String courseCode) {
+        for (Course course : courseDatabase) {
+            if (course.code.equals(courseCode)) {
+                return course;
+            }
+        }
+        return null;
+    }
+
+    public static void main(String[] args) {
+        CourseRegistrationSystem system = new CourseRegistrationSystem();
+        Scanner scanner = new Scanner(System.in);
+
+        int choice;
+
+        do {
+            System.out.println("Course Registration System Menu:");
+            System.out.println("1. Add Course");
+            System.out.println("2. Add Student");
+            System.out.println("3. Register Student for Course");
+            System.out.println("4. Display Course Listing");
+            System.out.println("5. Display Student Registration");
+            System.out.println("6. Remove Student from Course");
+            System.out.println("0. Exit");
+            System.out.println("Enter your choice:");
+
+            choice = scanner.nextInt();
+            scanner.nextLine(); // consume the newline character
+
+            switch (choice) {
+                case 1:
+                    system.addCourse();
+                    break;
+                case 2:
+                    system.addStudent();
+                    break;
+                case 3:
+                    system.registerStudentForCourse();
+                    break;
+                case 4:
+                    system.displayCourseListing();
+                    break;
+                case 5:
+                    system.displayStudentRegistration();
+                    break;
+                case 6:
+                    system.removeStudentFromCourse();
+                    break;
+                case 0:
+                    System.out.println("------------------------");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please enter a valid option.");
+            }
+        } while (choice != 0);
+    }
+}
